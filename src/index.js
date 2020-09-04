@@ -34,7 +34,12 @@ io.on('connection', (socket) => {
 		}
 
 		socket.join(user.room);
-
+		if (socket.rooms) {
+			socket.rooms.push(user.room);
+		} else {
+			socket.rooms = [room];
+		}
+		console.log(socketio.sockets.adapter.rooms[user.room]);
 		socket.emit('message', generateMessage('Admin', 'Welcome!'));
 		socket.broadcast
 			.to(user.room)
