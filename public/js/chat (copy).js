@@ -70,9 +70,3 @@ socket.emit('join', { username, room }, (error) => {
 		location.href = '/';
 	}
 });
-socket.on('status', (error) => {
-	if (error) {
-		alert(error);
-		location.href = '/';
-	}
-});

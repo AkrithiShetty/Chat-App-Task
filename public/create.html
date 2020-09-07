@@ -21,9 +21,11 @@
 					/>
 					<label>Room</label>
 					<input type="text" name="room" placeholder="Room" required />
-					<button>Create</button>
+					<button id="btn" value="create" onclick="setValue()">Create</button>
 				</form>
 			</div>
 		</div>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/js/status.js"></script>
 	</body>
 </html>
