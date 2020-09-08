@@ -1,5 +1,5 @@
 const users = [];
-const rooms = ['js'];
+const rooms = [];
 
 const addUser = ({ id, username, room }) => {
 	username = username.trim().toLowerCase();
@@ -9,12 +9,17 @@ const addUser = ({ id, username, room }) => {
 			error: 'Username and room are required!'
 		};
 	}
+	if (rooms.includes(room)) {
+		return {
+			error: `Room ${room} already exists!!`
+		};
+	}
 	const existingUser = users.find((user) => {
 		return user.room === room && user.username === username;
 	});
 	if (existingUser) {
 		return {
-			error: 'Username is in use!'
+			error: 'Username is already in use!'
 		};
 	}
 	const user = { id, username, room };
@@ -30,7 +35,7 @@ const addUserToExistingRoom = ({ id, username, room }) => {
 
 	if (!rooms.includes(room)) {
 		return {
-			error: `Invalid Room Name ${room}`
+			error: `Invalid Room Name: ${room}`
 		};
 	}
 	if (!username || !room) {
@@ -43,7 +48,7 @@ const addUserToExistingRoom = ({ id, username, room }) => {
 	});
 	if (existingUser) {
 		return {
-			error: 'Username is in use!'
+			error: 'Username is already in use!'
 		};
 	}
 	const user = { id, username, room };
@@ -75,19 +80,3 @@ module.exports = {
 	getUser,
 	getUsersInRoom
 };
-
-// const user = addUser({
-// 	id: 22,
-// 	username: 'Akrithi',
-// 	room: 'ise8a'
-// });
-
-// const user1 = addUserToExistingRoom({
-// 	id: 25,
-// 	username: 'Akriithi',
-// 	room: 'g'
-// });
-// console.log(user);
-// console.log(user1);
-// console.log(users);
-// console.log(rooms);

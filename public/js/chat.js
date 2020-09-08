@@ -1,5 +1,8 @@
 const socket = io();
 
+const buttonValue = localStorage.getItem('value');
+console.log(buttonValue);
+
 const $messageForm = document.querySelector('#message-form');
 const $messageFormInput = $messageForm.querySelector('input');
 const $messageFormButton = $messageForm.querySelector('button');
@@ -64,13 +67,7 @@ $messageForm.addEventListener('submit', (e) => {
 	});
 });
 
-socket.emit('join', { username, room }, (error) => {
-	if (error) {
-		alert(error);
-		location.href = '/';
-	}
-});
-socket.on('status', (error) => {
+socket.emit('join', { username, room, buttonValue }, (error) => {
 	if (error) {
 		alert(error);
 		location.href = '/';

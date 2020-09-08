@@ -3,7 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
-//const value = require('../public/js/status');
+
 const { generateMessage } = require('./utils/messages');
 const {
 	rooms,
@@ -26,78 +26,72 @@ app.use(express.static(publicDirectoryPath));
 io.on('connection', (socket) => {
 	console.log('New WebSocket connection');
 
-	// if (value == 'create') {
-	socket.on('join', (options, callback) => {
-		// const { error, user } = addUser({
-		// 	id: socket.id,
-		// 	...options
-		// });
+	socket.on('join', ({ username, room, buttonValue }, callback) => {
+		if (buttonValue == 'create') {
+			const { error, user } = addUser({
+				id: socket.id,
+				username,
+				room
+			});
 
-		// if (error) {
-		// 	return callback(error);
-		// }
+			if (error) {
+				return callback(error);
+			}
 
-		// socket.join(user.room);
-		// // if (!registeredRooms.includes(user.room)) {
-		// // 	socket.emit('status', `Invalid Room Name: ${user.room}`);
-		// // }
-		// console.log('Joining Room...: ' + user.room);
-		// // console.log(io.sockets.adapter.rooms[user.room]);
-		// // const rooms = [];
-		// // io.rooms.push(user.room);
+			socket.join(user.room);
 
-		// //console.log(rooms);
-		// socket.emit('message', generateMessage('Admin', 'Welcome!'));
-		// socket.broadcast
-		// 	.to(user.room)
-		// 	.emit(
-		// 		'message',
-		// 		generateMessage('Admin', `${user.username} has joined!`)
-		// 	);
-		// io.to(user.room).emit('roomData', {
-		// 	room: user.room,
-		// 	users: getUsersInRoom(user.room)
-		// });
+			console.log('Joining Room...: ' + user.room);
 
-		// callback();
-		// //value = 'join';
-		// // } else {
-		// // 	socket.on('join', (options, callback) => {
-		const { error, user } = addUserToExistingRoom({
-			id: socket.id,
-			...options
-		});
+			socket.emit('message', generateMessage('Admin', 'Welcome!'));
+			socket.broadcast
+				.to(user.room)
+				.emit(
+					'message',
+					generateMessage('Admin', `${user.username} has joined!`)
+				);
 
-		if (error) {
-			return callback(error);
+			io.to(user.room).emit('roomData', {
+				room: user.room,
+				users: getUsersInRoom(user.room)
+			});
+
+			callback();
+		} else {
+			const { error, user } = addUserToExistingRoom({
+				id: socket.id,
+				username,
+				room
+			});
+
+			if (error) {
+				return callback(error);
+			}
+
+			socket.join(user.room);
+
+			if (!rooms.includes(user.room)) {
+				socket.emit('status', `Invalid Room Name: ${user.room}`);
+			}
+
+			console.log('Joining Room...: ' + user.room);
+
+			socket.emit('message', generateMessage('Admin', 'Welcome!'));
+			socket.broadcast
+				.to(user.room)
+				.emit(
+					'message',
+					generateMessage('Admin', `${user.username} has joined!`)
+				);
+
+			io.to(user.room).emit('roomData', {
+				room: user.room,
+				users: getUsersInRoom(user.room)
+			});
+
+			callback();
 		}
-
-		socket.join(user.room);
-		if (!rooms.includes(user.room)) {
-			socket.emit('status', `Invalid Room Name: ${user.room}`);
-		}
-		console.log('Joining Room...: ' + user.room);
-		// console.log(io.sockets.adapter.rooms[user.room]);
-		// const rooms = [];
-		// io.rooms.push(user.room);
-
-		//console.log(rooms);
-		socket.emit('message', generateMessage('Admin', 'Welcome!'));
-		socket.broadcast
-			.to(user.room)
-			.emit(
-				'message',
-				generateMessage('Admin', `${user.username} has joined!`)
-			);
-		io.to(user.room).emit('roomData', {
-			room: user.room,
-			users: getUsersInRoom(user.room)
-		});
-
-		callback();
-
-		//}
 	});
+
 	socket.on('sendMessage', (message, callback) => {
 		const user = getUser(socket.id);
 		const filter = new Filter();

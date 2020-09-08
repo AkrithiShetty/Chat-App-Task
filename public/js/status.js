@@ -1,3 +1,3 @@
-// const btn = document.querySelector('#btn').value;
-
-// module.exports = { btn };
+const btn = document.getElementById('btn').value;
+console.log(btn);
+localStorage.setItem('value', btn);
