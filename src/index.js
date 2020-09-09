@@ -22,7 +22,8 @@ const port = process.env.PORT || 3000;
 const publicDirectoryPath = path.join(__dirname, '../public');
 
 app.use(express.static(publicDirectoryPath));
-
+const history = [];
+const client = [];
 io.on('connection', (socket) => {
 	console.log('New WebSocket connection');
 
@@ -42,13 +43,10 @@ io.on('connection', (socket) => {
 
 			console.log('Joining Room...: ' + user.room);
 
-			socket.emit('message', generateMessage('Admin', 'Welcome!'));
-			socket.broadcast
-				.to(user.room)
-				.emit(
-					'message',
-					generateMessage('Admin', `${user.username} has joined!`)
-				);
+			socket.emit(
+				'message',
+				generateMessage('Admin', `Welcome! ${user.username}`)
+			);
 
 			io.to(user.room).emit('roomData', {
 				room: user.room,
@@ -69,13 +67,31 @@ io.on('connection', (socket) => {
 
 			socket.join(user.room);
 
-			if (!rooms.includes(user.room)) {
-				socket.emit('status', `Invalid Room Name: ${user.room}`);
+			// client.push({ id: socket.client.id });
+			// console.log(client);
+
+			// var getClientID = client.find((e) => e.id === socket.client.id);
+			// console.log('the Client', getClientID);
+			// if (getClientID) {
+			if (history.length != 0) {
+				for (const i in history) {
+					socket.emit(
+						'message',
+						generateMessage(history[i].user['username'], history[i].message)
+					);
+				}
 			}
+			// }
+			// if (!rooms.includes(user.room)) {
+			// 	socket.emit('status', `Invalid Room Name: ${user.room}`);
+			// }
 
 			console.log('Joining Room...: ' + user.room);
 
-			socket.emit('message', generateMessage('Admin', 'Welcome!'));
+			socket.emit(
+				'message',
+				generateMessage('Admin', `Welcome! ${user.username}`)
+			);
 			socket.broadcast
 				.to(user.room)
 				.emit(
@@ -99,7 +115,8 @@ io.on('connection', (socket) => {
 		if (filter.isProfane(message)) {
 			return callback('Profanity is not allowed!');
 		}
-
+		history.push({ user, message });
+		console.log(history);
 		io.to(user.room).emit('message', generateMessage(user.username, message));
 		callback();
 	});

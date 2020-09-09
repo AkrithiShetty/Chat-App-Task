@@ -80,3 +80,24 @@ module.exports = {
 	getUser,
 	getUsersInRoom
 };
+
+// const history = [];
+// const user = addUser({
+// 	id: 22,
+// 	username: 'Akrithi',
+// 	room: 'ISE8A'
+// });
+// const m1 = 'hy';
+// const m2 = 'Hello';
+// const user1 = addUser({
+// 	id: 232,
+// 	username: 'Suraksha',
+// 	room: 'ISE8aA'
+// });
+// console.log(user.toString());
+
+// history.push({ user, m1 });
+
+// history.push({ user1, m2 });
+// console.log(history);
+// console.log(history[0].user.user['username']);
